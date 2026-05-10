@@ -1,0 +1,19 @@
+{
+  "name": "promusicgen-web",
+  "version": "1.0.0",
+  "description": "AI-powered music generation web app using MusicGen",
+  "main": "api/index.py",
+  "scripts": {
+    "dev": "python app.py",
+    "build": "echo 'No build step required'",
+    "start": "python app.py"
+  },
+  "keywords": ["music", "generation", "ai", "musicgen"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^4.3.0"
+  }
+}

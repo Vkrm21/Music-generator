@@ -1,0 +1,622 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface2: #1a1a1a;
+  --border: #2a2a2a;
+  --accent: #e8ff47;
+  --accent2: #ff6b35;
+  --text: #f0f0f0;
+  --muted: #666;
+  --active: #e8ff47;
+}
+
+body { background: transparent; }
+
+.studio {
+  background: var(--bg);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+}
+
+.studio-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+}
+
+.logo span { color: var(--text); }
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #3a3a3a;
+  display: inline-block;
+  margin-right: 8px;
+  transition: background 0.3s;
+}
+.status-dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+.status-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+.studio-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.prompt-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.prompt-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  resize: none;
+  height: 70px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.prompt-input:focus { border-color: var(--accent); }
+.prompt-input::placeholder { color: var(--muted); }
+
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+  background: transparent;
+  font-family: 'Space Mono', monospace;
+}
+.tag:hover, .tag.on { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.08); }
+
+.controls-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.knob-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+input[type=range] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.val {
+  font-size: 12px;
+  color: var(--accent);
+  min-width: 28px;
+  text-align: right;
+}
+
+.versions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.ver-btn {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ver-btn.sel { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+.ver-btn:hover:not(.sel) { border-color: var(--accent); color: var(--accent); }
+
+.gen-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+.gen-btn:hover { background: #f5ff6e; transform: translateY(-1px); }
+.gen-btn:active { transform: scale(0.99); }
+.gen-btn:disabled { background: #333; color: #666; transform: none; cursor: not-allowed; }
+
+.output-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+}
+.output-area.visible { display: block; }
+
+.output-header {
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.track-list { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+
+.track-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.track-item:hover { background: var(--surface2); }
+.track-item.playing { background: rgba(232,255,71,0.07); }
+
+.play-btn-sm {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.play-btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.playing .play-btn-sm { border-color: var(--accent); background: var(--accent); color: #000; }
+
+.track-info { flex: 1; min-width: 0; }
+.track-name { font-size: 12px; color: var(--text); }
+.track-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.waveform-mini {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 24px;
+}
+.wbar {
+  width: 2px;
+  border-radius: 1px;
+  background: var(--border);
+  transition: background 0.3s, height 0.3s;
+}
+.playing .wbar { background: var(--accent); }
+
+.dl-btn-sm {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  transition: all 0.15s;
+}
+.dl-btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+
+.log-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 11px;
+  color: var(--muted);
+  height: 64px;
+  overflow-y: auto;
+  display: none;
+  line-height: 1.6;
+}
+.log-box.visible { display: block; }
+.log-line { color: var(--muted); }
+.log-line.accent { color: var(--accent); }
+.log-line.done { color: #7bff8e; }
+
+.progress-bar-wrap {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+  margin-top: 8px;
+  display: none;
+}
+.progress-bar-wrap.visible { display: block; }
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.enhance-preview {
+  font-size: 10px;
+  color: #444;
+  margin-top: 8px;
+  line-height: 1.5;
+  display: none;
+}
+.enhance-preview.visible { display: block; }
+.enhance-preview span { color: var(--accent); }
+</style>
+
+<div class="studio">
+  <div class="studio-header">
+    <div class="logo">PRO<span>MusicGen</span></div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <div class="status-dot" id="dot"></div>
+      <span class="status-label" id="status-lbl">idle</span>
+    </div>
+  </div>
+
+  <div class="studio-body">
+
+    <div class="prompt-section">
+      <div class="label">Style prompt</div>
+      <textarea class="prompt-input" id="prompt" placeholder="e.g. dark trap beat with heavy 808..."></textarea>
+      <div class="enhance-preview" id="ep">Enhanced: <span id="ep-text"></span></div>
+      <div class="tags-row" id="tags-row">
+        <button class="tag" data-tag="dark trap">dark trap</button>
+        <button class="tag" data-tag="lo-fi hip hop">lo-fi hip hop</button>
+        <button class="tag" data-tag="drill beat">drill beat</button>
+        <button class="tag" data-tag="phonk">phonk</button>
+        <button class="tag" data-tag="ambient">ambient</button>
+        <button class="tag" data-tag="chill R&B">chill R&B</button>
+        <button class="tag" data-tag="rage beat">rage beat</button>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <div class="knob-card">
+        <div class="label">Temperature</div>
+        <div class="slider-row">
+          <input type="range" min="0" max="20" step="1" value="10" id="temp" />
+          <span class="val" id="temp-val">1.0</span>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="label">Max tokens</div>
+        <div class="slider-row">
+          <input type="range" min="512" max="4096" step="256" value="2048" id="tokens" />
+          <span class="val" id="tok-val">2048</span>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="label">Top-K</div>
+        <div class="slider-row">
+          <input type="range" min="50" max="500" step="10" value="250" id="topk" />
+          <span class="val" id="topk-val">250</span>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="label">Top-P</div>
+        <div class="slider-row">
+          <input type="range" min="50" max="100" step="1" value="95" id="topp" />
+          <span class="val" id="topp-val">0.95</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="versions-row">
+      <div class="label" style="margin:0;margin-right:4px;">Versions</div>
+      <button class="ver-btn sel" data-v="1">1</button>
+      <button class="ver-btn" data-v="2">2</button>
+      <button class="ver-btn" data-v="3">3</button>
+      <div style="flex:1;"></div>
+      <span style="font-size:10px;color:var(--muted);">generates N tracks</span>
+    </div>
+
+    <button class="gen-btn" id="gen-btn">Generate</button>
+
+    <div class="progress-bar-wrap" id="prog-wrap">
+      <div class="progress-bar-fill" id="prog-fill"></div>
+    </div>
+
+    <div class="log-box" id="log"></div>
+
+    <div class="output-area" id="output">
+      <div class="output-header">
+        <span class="label" style="margin:0;">Generated tracks</span>
+        <span style="font-size:10px;color:var(--muted);" id="out-count"></span>
+      </div>
+      <div class="track-list" id="track-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const BASE_TAGS = ["trap beat","hard 808 bass","fast hi-hats","dark melody","clean mix","studio quality","wide stereo","punchy drums"];
+
+const $ = id => document.getElementById(id);
+let versions = 1;
+let generating = false;
+let activeTrack = null;
+
+document.getElementById('temp').addEventListener('input', e => {
+  $('temp-val').textContent = (e.target.value / 10).toFixed(1);
+});
+document.getElementById('tokens').addEventListener('input', e => {
+  $('tok-val').textContent = e.target.value;
+});
+document.getElementById('topk').addEventListener('input', e => {
+  $('topk-val').textContent = e.target.value;
+});
+document.getElementById('topp').addEventListener('input', e => {
+  $('topp-val').textContent = (e.target.value / 100).toFixed(2);
+});
+
+document.getElementById('tags-row').querySelectorAll('.tag').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('on');
+    let promptEl = $('prompt');
+    let tag = btn.dataset.tag;
+    if (btn.classList.contains('on')) {
+      promptEl.value = (promptEl.value ? promptEl.value + ', ' : '') + tag;
+    } else {
+      promptEl.value = promptEl.value.replace(new RegExp(',?\\s*' + tag, 'g'), '').replace(/^,\s*/, '').trim();
+    }
+    updateEnhanced();
+  });
+});
+
+document.getElementById('prompt').addEventListener('input', updateEnhanced);
+
+function updateEnhanced() {
+  const p = $('prompt').value.trim();
+  if (p) {
+    $('ep-text').textContent = p + ', ' + BASE_TAGS.join(', ');
+    $('ep').classList.add('visible');
+  } else {
+    $('ep').classList.remove('visible');
+  }
+}
+
+document.querySelectorAll('.ver-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ver-btn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    versions = parseInt(btn.dataset.v);
+  });
+});
+
+function log(msg, cls='') {
+  const box = $('log');
+  box.classList.add('visible');
+  const line = document.createElement('div');
+  line.className = 'log-line ' + cls;
+  line.textContent = msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function setStatus(txt, active) {
+  $('status-lbl').textContent = txt;
+  $('dot').className = 'status-dot' + (active ? ' active' : '');
+}
+
+function waveformBars(n=16) {
+  let bars = '';
+  for (let i=0;i<n;i++) {
+    const h = Math.floor(4 + Math.random()*18);
+    bars += `<div class="wbar" style="height:${h}px"></div>`;
+  }
+  return bars;
+}
+
+function addTrack(name, meta) {
+  const list = $('track-list');
+  const item = document.createElement('div');
+  item.className = 'track-item';
+  item.dataset.name = name;
+  item.innerHTML = `
+    <button class="play-btn-sm">&#9654;</button>
+    <div class="track-info">
+      <div class="track-name">${name}</div>
+      <div class="track-meta">${meta}</div>
+    </div>
+    <div class="waveform-mini">${waveformBars()}</div>
+    <button class="dl-btn-sm">DL</button>
+  `;
+  const playBtn = item.querySelector('.play-btn-sm');
+  playBtn.addEventListener('click', () => {
+    if (activeTrack === item) {
+      item.classList.remove('playing');
+      playBtn.innerHTML = '&#9654;';
+      activeTrack = null;
+    } else {
+      if (activeTrack) {
+        activeTrack.classList.remove('playing');
+        activeTrack.querySelector('.play-btn-sm').innerHTML = '&#9654;';
+      }
+      item.classList.add('playing');
+      playBtn.innerHTML = '&#9646;&#9646;';
+      activeTrack = item;
+    }
+  });
+
+  const dlBtn = item.querySelector('.dl-btn-sm');
+  dlBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.href = `/download/${name}`;
+    link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  list.appendChild(item);
+}
+
+async function generateMusic() {
+  if (generating) return;
+  const prompt = $('prompt').value.trim();
+  if (!prompt) { $('prompt').focus(); return; }
+
+  generating = true;
+  const btn = $('gen-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  $('log').innerHTML = '';
+  $('track-list').innerHTML = '';
+  $('output').classList.remove('visible');
+
+  const prog = $('prog-wrap');
+  const fill = $('prog-fill');
+  prog.classList.add('visible');
+  fill.style.width = '0%';
+
+  setStatus('loading', true);
+  log('🔥 Loading MusicGen Pro...', 'accent');
+
+  try {
+    const response = await fetch('/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        temperature: parseFloat($('temp-val').textContent),
+        max_tokens: parseInt($('tok-val').textContent),
+        top_k: parseInt($('topk-val').textContent),
+        top_p: parseFloat($('topp-val').textContent),
+        versions: versions
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Generation failed');
+    }
+
+    const data = await response.json();
+    const tracks = data.tracks;
+
+    // Simulate progress updates
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += 2;
+      if (progress > 90) progress = 90;
+      fill.style.width = progress + '%';
+    }, 200);
+
+    // Add tracks to UI
+    tracks.forEach((track, index) => {
+      setTimeout(() => {
+        log(`✅ Generated: ${track.filename}`, 'done');
+        addTrack(track.filename, track.meta);
+      }, index * 500);
+    });
+
+    setTimeout(() => {
+      clearInterval(progressInterval);
+      fill.style.width = '100%';
+      $('output').classList.add('visible');
+      $('out-count').textContent = `${tracks.length} track${tracks.length>1?'s':''}`;
+      setStatus('done', false);
+      btn.disabled = false;
+      btn.textContent = 'Generate';
+      generating = false;
+    }, tracks.length * 500 + 1000);
+
+  } catch (error) {
+    log(`❌ Error: ${error.message}`, 'accent');
+    setStatus('error', false);
+    btn.disabled = false;
+    btn.textContent = 'Generate';
+    generating = false;
+    prog.classList.remove('visible');
+  }
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+$('gen-btn').addEventListener('click', generateMusic);
+</script>

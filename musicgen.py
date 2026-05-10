@@ -68,6 +68,9 @@ class ProMusicGen:
 
     # 🎵 Main generation
     def generate(self, user_prompt):
+        return self.generate_custom(user_prompt, temperature=1.0, max_tokens=2048, top_k=250, top_p=0.95)
+
+    def generate_custom(self, user_prompt, temperature=1.0, max_tokens=2048, top_k=250, top_p=0.95):
         print("🎧 Generating...")
 
         prompt = self.enhance_prompt(user_prompt)
@@ -81,11 +84,11 @@ class ProMusicGen:
         with torch.no_grad():
             audio_values = self.model.generate(
                 **inputs,
-                max_new_tokens=2048,
+                max_new_tokens=max_tokens,
                 do_sample=True,
-                top_k=250,
-                top_p=0.95,
-                temperature=1.0
+                top_k=top_k,
+                top_p=top_p,
+                temperature=temperature
             )
 
         audio = audio_values[0].cpu().numpy()
