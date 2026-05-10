@@ -10,8 +10,8 @@ echo 🔗 Logging into Vercel...
 call vercel login
 
 echo.
-echo 📤 Deploying to Vercel...
-call vercel --prod
+echo 📤 Deploying to Vercel with archive compression...
+call vercel --prod --archive=tgz
 
 echo.
 echo ✅ Deployment complete!

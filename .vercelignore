@@ -1,3 +1,10 @@
+# Exclude large sample/media directories
+Final/
+Oversampled - HYPERWAVES/
+Oversampled - POWER UP - Production & Game Design/
+Oversampled - VOLCANO/
+samples/
+
 # Exclude local development files
 __pycache__/
 *.pyc
@@ -18,9 +25,11 @@ coverage.xml
 *.cover
 *.log
 .git
+.gitignore
 .mypy_cache
 .pytest_cache
 .hypothesis
+node_modules/
 
 # Exclude generated music files
 musicgen_pro_*.wav
@@ -34,6 +43,7 @@ musicgen_pro_*.wav
 # Exclude OS files
 .DS_Store
 Thumbs.db
+.next/
 
 # Keep these for deployment
 !api/
@@ -41,3 +51,5 @@ Thumbs.db
 !requirements.txt
 !promusicgen_frontend.html
 !musicgen.py
+!package.json
+!README.md
